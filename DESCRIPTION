@@ -1,0 +1,30 @@
+Package: metricT
+Type: Package
+Title: Exact Permutation Diagnostics for Directional Fragility in EEG
+    Connectivity
+Version: 0.2.0
+Authors@R: person("Akira", "Kimura", email = "a-kimura@paz.ac.jp",
+    role = c("aut", "cre"), comment = c(ORCID = "0000-0003-0220-5678"))
+Description: Implements Metric-T, a permutation-based diagnostic that flags
+    when the reported direction of a group difference in EEG functional
+    connectivity depends on the choice of metric. Direction consistency (DC)
+    converts the weighted phase lag index (wPLI) and magnitude-squared
+    coherence (MSC), both derived from the same cross-spectrum, into the
+    percentage of channel-pair features for which one group exceeds the
+    other; Metric-T is T = DC(wPLI) - DC(MSC). Significance is assessed by
+    aligned label permutation with marginal and Westfall-Young max-T
+    multiplicity control. For small samples the reference set is enumerated
+    completely: exact two-group tests, the complete two-group labelling
+    space (in which cut-points, exclusions and batches are located on one
+    distribution), and a stratified exact test for a continuous covariate.
+    Core functions use base R only; a 'shiny' graphical interface is
+    included. Method: Kimura (2026) <doi:10.1016/j.neuri.2026.100286>.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.0.0)
+Imports: stats, graphics, grDevices, utils
+Suggests: shiny, testthat (>= 3.0.0)
+Config/testthat/edition: 3
+URL: https://github.com/akimura753/metricT
+BugReports: https://github.com/akimura753/metricT/issues
+RoxygenNote: 7.3.1

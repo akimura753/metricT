@@ -1,0 +1,16 @@
+export(mt_bands, mt_epoch, mt_clean_epochs, mt_connectivity, mt_features_from_epochs,
+       mt_features_from_eeg_csv, mt_dc, metric_t, mt_wy_maxt,
+       mt_read_npy, mt_read_npz, mt_read_features_csv, mt_write_features_csv,
+       mt_simulate, mt_null_plot, run_metricT_app,
+       mt_motion_bands, mt_simulate_motion, mt_labelings, mt_labelset,
+       mt_label_space, mt_locate, metric_t_trend)
+S3method(print, mt_labelset)
+S3method(print, mt_label_space)
+S3method(print, metricT_trend)
+S3method(print, metricT)
+S3method(plot, metricT)
+S3method(as.data.frame, metricT)
+importFrom(stats, ave, cor, mvfft, p.adjust, rnorm, runif, sd, setNames)
+importFrom(utils, combn, read.csv, read.delim, write.csv, unzip)
+importFrom(graphics, abline, axis, barplot, box, hist, legend, mtext, par, text)
+importFrom(grDevices, adjustcolor)
