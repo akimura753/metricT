@@ -11,6 +11,15 @@ mt_null_plot(x, condition = 1L)
 
 \item{condition}{Row number of \code{x$table}.}
 }
+\value{
+The permutation values of T for the chosen condition, invisibly.
+  Called for its side effect of drawing a histogram.
+}
 \description{
 Permutation null distribution of T for one condition
+}
+\examples{
+sim <- mt_simulate(n = c(A = 6, B = 6), n_ch = 4, n_epochs = 8, seed = 1)
+res <- metric_t(sim$features, sim$group, exact = TRUE)
+mt_null_plot(res, condition = 1)
 }

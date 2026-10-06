@@ -56,3 +56,8 @@ weaker but mostly phase-lagged coupling, so MSC ranks A above B while wPLI
 ranks B above A in the band containing \code{f0}: the situation Metric-T
 is designed to flag. Intended for demonstration and software testing.
 }
+\examples{
+sim <- mt_simulate(n = c(A = 6, B = 6), n_ch = 4, n_epochs = 8, seed = 1)
+names(sim$features)
+table(sim$group)
+}

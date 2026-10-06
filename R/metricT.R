@@ -6,6 +6,10 @@
 #'
 #' @param g1,g2 Numeric matrices (subjects x features) for the two groups.
 #' @return A single number between 0 and 100.
+#' @examples
+#' g1 <- matrix(rnorm(5 * 10, mean = 0.5), nrow = 5)   # 5 subjects, 10 features
+#' g2 <- matrix(rnorm(6 * 10), nrow = 6)               # 6 subjects
+#' mt_dc(g1, g2)
 #' @export
 mt_dc <- function(g1, g2) {
   100 * mean(colMeans(as.matrix(g1)) > colMeans(as.matrix(g2)))
@@ -34,6 +38,10 @@ mt_dc <- function(g1, g2) {
 #' @param exact \code{TRUE} when the columns of \code{T_perm} are the complete
 #'   set of label assignments (the observed one included).
 #' @return Adjusted p-values, in the order of \code{T_obs}.
+#' @examples
+#' T_obs <- c(40, -10, 20)
+#' T_perm <- matrix(sample(seq(-100, 100, by = 10), 3 * 500, replace = TRUE), nrow = 3)
+#' mt_wy_maxt(T_obs, T_perm)
 #' @export
 mt_wy_maxt <- function(T_obs, T_perm, exact = FALSE) {
   so <- abs(T_obs); sp <- abs(T_perm)
@@ -251,6 +259,11 @@ print.metricT <- function(x, digits = 1, ...) {
 #' @param x A \code{metricT} object.
 #' @param col Two colours for wPLI and MSC.
 #' @param ... Unused.
+#' @return The object \code{x}, invisibly. Called for its side effect of drawing a plot.
+#' @examples
+#' sim <- mt_simulate(n = c(A = 6, B = 6), n_ch = 4, n_epochs = 8, seed = 1)
+#' res <- metric_t(sim$features, sim$group, exact = TRUE)
+#' plot(res)
 #' @export
 plot.metricT <- function(x, col = c("#3b6fb0", "#cf5b4e"), ...) {
   t <- x$table
@@ -284,6 +297,12 @@ plot.metricT <- function(x, col = c("#3b6fb0", "#cf5b4e"), ...) {
 #'
 #' @param x A \code{metricT} object computed with \code{keep_null = TRUE}.
 #' @param condition Row number of \code{x$table}.
+#' @return The permutation values of T for the chosen condition, invisibly.
+#'   Called for its side effect of drawing a histogram.
+#' @examples
+#' sim <- mt_simulate(n = c(A = 6, B = 6), n_ch = 4, n_epochs = 8, seed = 1)
+#' res <- metric_t(sim$features, sim$group, exact = TRUE)
+#' mt_null_plot(res, condition = 1)
 #' @export
 mt_null_plot <- function(x, condition = 1L) {
   if (is.null(x$T_perm)) stop("Null distribution was not kept (keep_null = FALSE).")

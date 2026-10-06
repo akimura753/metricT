@@ -17,3 +17,8 @@ The published pipeline saves \code{features.npz} with arrays named
 \code{<band>__wpli} and \code{<band>__msc} (subjects x channel pairs) and
 \code{subj_group}. This reads the archive directly in R.
 }
+\examples{
+f <- system.file("extdata", "B_features.npz", package = "metricT")
+dat <- mt_read_npz(f)
+names(dat)
+}

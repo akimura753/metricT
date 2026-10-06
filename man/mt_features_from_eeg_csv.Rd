@@ -38,3 +38,14 @@ Each file holds one recording: samples in rows, channels in columns, with a
 header row of channel names. Preprocessing (filtering, artifact removal,
 re-referencing) is expected to have been done upstream.
 }
+\examples{
+files <- file.path(tempdir(), c("s1.csv", "s2.csv"))
+n <- 128 * 20                                # 20 s at 128 Hz
+for (f in files) {
+  d <- data.frame(time = seq_len(n) / 128, C3 = rnorm(n), C4 = rnorm(n), Pz = rnorm(n))
+  write.csv(d, f, row.names = FALSE)
+}
+feats <- mt_features_from_eeg_csv(files, sfreq = 128)
+dim(feats$alpha$wpli)
+unlink(files)
+}

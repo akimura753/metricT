@@ -9,6 +9,14 @@ run_metricT_app(...)
 \arguments{
 \item{...}{Passed to \code{shiny::runApp}.}
 }
+\value{
+No return value, called for side effects (starts the 'shiny' application).
+}
 \description{
 Launch the Metric-T graphical interface
+}
+\examples{
+if (interactive()) {
+  run_metricT_app()
+}
 }

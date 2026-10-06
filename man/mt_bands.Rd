@@ -12,3 +12,6 @@ Named list of length-2 numeric vectors.
 \description{
 A band c(lo, hi) keeps Fourier bins with lo <= f < hi.
 }
+\examples{
+mt_bands()
+}

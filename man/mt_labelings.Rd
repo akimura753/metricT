@@ -33,3 +33,12 @@ Applies Metric-T to the same features under several ways of assigning
 subjects to two classes, so that the dependence of the conclusion on the
 labelling rule can be read from one table.
 }
+\examples{
+sim <- mt_simulate_motion(rep(c(1, -1), each = 6), rep(c(1, -1), times = 6),
+                          duration = 30, seed = 1)
+fast <- sim$covariates$cadence_hz > median(sim$covariates$cadence_hz)
+steady <- sim$covariates$period_cv < median(sim$covariates$period_cv)
+rules <- list(by_speed = ifelse(fast, "good", "poor"),
+              by_accuracy = ifelse(steady, "good", "poor"))
+mt_labelings(sim$features, rules, n_perm = 200)
+}

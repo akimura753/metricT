@@ -49,3 +49,12 @@ giving \eqn{2^m} labellings. Metric-T is evaluated on each one. The range
 of T and the proportion of labellings with a reversal describe how far the
 conclusion depends on the treatment of ambiguous cases.
 }
+\examples{
+sim <- mt_simulate_motion(rep(c(1, -1), each = 6), rep(c(1, -1), times = 6),
+                          duration = 30, seed = 1)
+fast <- sim$covariates$cadence_hz > median(sim$covariates$cadence_hz)
+steady <- sim$covariates$period_cv < median(sim$covariates$period_cv)
+lab <- ifelse(fast & steady, "good", ifelse(!fast & !steady, "poor", NA))
+table(lab, useNA = "ifany")
+mt_labelset(sim$features, lab)
+}

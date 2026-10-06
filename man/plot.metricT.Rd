@@ -13,7 +13,15 @@
 
 \item{...}{Unused.}
 }
+\value{
+The object \code{x}, invisibly. Called for its side effect of drawing a plot.
+}
 \description{
 One panel per comparison; bars show DC(wPLI) and DC(MSC) by band, the
 dashed line marks 50%, and shaded bands mark directional reversals.
+}
+\examples{
+sim <- mt_simulate(n = c(A = 6, B = 6), n_ch = 4, n_epochs = 8, seed = 1)
+res <- metric_t(sim$features, sim$group, exact = TRUE)
+plot(res)
 }

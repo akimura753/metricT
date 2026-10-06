@@ -24,3 +24,11 @@ Wide layout: one row per subject; columns \code{subject}, \code{group},
 then one column per feature named \code{<band>__<metric>__<pair>}. Any
 software that can compute wPLI and MSC can produce this file.
 }
+\examples{
+sim <- mt_simulate(n = c(A = 4, B = 4), n_ch = 4, n_epochs = 8, seed = 1)
+f <- tempfile(fileext = ".csv")
+mt_write_features_csv(sim$features, sim$group, f)
+back <- mt_read_features_csv(f)
+table(back$group)
+unlink(f)
+}

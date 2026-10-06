@@ -25,3 +25,8 @@ wPLI_ij = |mean(Im S_ij)| / mean(|Im S_ij|) and
 MSC_ij = |mean(S_ij)|^2 / (mean(S_ii) mean(S_jj)).
 Both metrics therefore come from identical cross-spectral estimates.
 }
+\examples{
+ep <- mt_epoch(matrix(rnorm(128 * 20 * 3), ncol = 3), sfreq = 128)
+con <- mt_connectivity(ep, sfreq = 128)
+str(con$alpha)
+}

@@ -17,3 +17,7 @@ Supports little-endian float64/float32/int32/int64/bool and fixed-width
 unicode arrays, which covers the files written by the Python reference
 pipeline. Pickled object arrays are skipped with a warning.
 }
+\examples{
+f <- system.file("extdata", "tiny_epochs.npy", package = "metricT")
+dim(mt_read_npy(f))
+}

@@ -21,3 +21,8 @@ Array of dimension epochs x channels x samples.
 \description{
 Cut a continuous recording into fixed-length epochs
 }
+\examples{
+x <- matrix(rnorm(128 * 10 * 3), ncol = 3)   # 10 s of 3 channels at 128 Hz
+ep <- mt_epoch(x, sfreq = 128, epoch_len = 2, overlap = 0.5)
+dim(ep)                                      # epochs x channels x samples
+}

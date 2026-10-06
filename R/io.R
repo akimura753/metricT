@@ -6,6 +6,9 @@
 #'
 #' @param path Path to a .npy file.
 #' @return An R array (or vector) with the NumPy shape, or NULL if unsupported.
+#' @examples
+#' f <- system.file("extdata", "tiny_epochs.npy", package = "metricT")
+#' dim(mt_read_npy(f))
 #' @export
 mt_read_npy <- function(path) {
   raw <- readBin(path, "raw", n = file.info(path)$size)
@@ -56,6 +59,10 @@ mt_read_npy <- function(path) {
 #'
 #' @param path Path to a .npz file.
 #' @return List with \code{features} and \code{group}, ready for \code{\link{metric_t}}.
+#' @examples
+#' f <- system.file("extdata", "B_features.npz", package = "metricT")
+#' dat <- mt_read_npz(f)
+#' names(dat)
 #' @export
 mt_read_npz <- function(path) {
   tmp <- tempfile("npz"); dir.create(tmp)
@@ -84,6 +91,13 @@ mt_read_npz <- function(path) {
 #' @param features,group As for \code{\link{metric_t}}.
 #' @param path CSV path.
 #' @param subject Optional subject identifiers.
+#' @examples
+#' sim <- mt_simulate(n = c(A = 4, B = 4), n_ch = 4, n_epochs = 8, seed = 1)
+#' f <- tempfile(fileext = ".csv")
+#' mt_write_features_csv(sim$features, sim$group, f)
+#' back <- mt_read_features_csv(f)
+#' table(back$group)
+#' unlink(f)
 #' @export
 mt_write_features_csv <- function(features, group, path, subject = NULL) {
   n <- length(group)

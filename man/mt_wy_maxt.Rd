@@ -21,3 +21,8 @@ Adjusted p-values, in the order of \code{T_obs}.
 \description{
 Westfall-Young max-T step-down adjustment
 }
+\examples{
+T_obs <- c(40, -10, 20)
+T_perm <- matrix(sample(seq(-100, 100, by = 10), 3 * 500, replace = TRUE), nrow = 3)
+mt_wy_maxt(T_obs, T_perm)
+}

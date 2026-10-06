@@ -20,6 +20,10 @@
 #' @param seed Random seed.
 #' @param keep_epochs Also return the simulated epochs.
 #' @return List with \code{features}, \code{group} and optionally \code{epochs}.
+#' @examples
+#' sim <- mt_simulate(n = c(A = 6, B = 6), n_ch = 4, n_epochs = 8, seed = 1)
+#' names(sim$features)
+#' table(sim$group)
 #' @export
 mt_simulate <- function(n = c(A = 20, B = 20), zero_lag = c(0.58, 0.42), strength = c(1, 0.9),
                         subject_sd = 0.05, gain_sd = 0.7, n_ch = 8L,
@@ -56,6 +60,11 @@ mt_simulate <- function(n = c(A = 20, B = 20), zero_lag = c(0.58, 0.42), strengt
 #' Launch the Metric-T graphical interface
 #'
 #' @param ... Passed to \code{shiny::runApp}.
+#' @return No return value, called for side effects (starts the 'shiny' application).
+#' @examples
+#' if (interactive()) {
+#'   run_metricT_app()
+#' }
 #' @export
 run_metricT_app <- function(...) {
   if (!requireNamespace("shiny", quietly = TRUE))

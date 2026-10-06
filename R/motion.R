@@ -3,6 +3,8 @@
 #' \code{movement} covers the repetition frequency of a paced squat
 #' (roughly 0.4 to 0.9 Hz); \code{harmonic} covers its second and third harmonics.
 #' @return Named list of length-2 numeric vectors.
+#' @examples
+#' mt_motion_bands()
 #' @export
 mt_motion_bands <- function() list(movement = c(0.35, 1.0), harmonic = c(1.0, 2.2))
 
@@ -33,6 +35,12 @@ mt_motion_bands <- function() list(movement = c(0.35, 1.0), harmonic = c(1.0, 2.
 #' @param keep_signals Also return the simulated recordings.
 #' @return List with \code{features} and \code{covariates}: observed cadence
 #'   (Hz) and repetition-period CV per subject, as video analysis would give.
+#' @examples
+#' z_speed <- rep(c(1, -1), each = 4)
+#' z_accuracy <- rep(c(1, -1), times = 4)
+#' sim <- mt_simulate_motion(z_speed, z_accuracy, duration = 30, seed = 1)
+#' sim$covariates
+#' dim(sim$features$movement$wpli)
 #' @export
 mt_simulate_motion <- function(z_speed, z_accuracy, fs = 30, duration = 60, f0 = 0.63,
                                n_joints = 6L, lag_unit = 0.35, lag_jitter = 0.5, period_cv = 0.08,
@@ -91,6 +99,14 @@ mt_simulate_motion <- function(z_speed, z_accuracy, fs = 30, duration = 60, f0 =
 #' @param n_perm Permutations per rule (0 skips the test; p-values are then NA).
 #' @param seed Random seed.
 #' @return Data frame with one row per rule and band.
+#' @examples
+#' sim <- mt_simulate_motion(rep(c(1, -1), each = 6), rep(c(1, -1), times = 6),
+#'                           duration = 30, seed = 1)
+#' fast <- sim$covariates$cadence_hz > median(sim$covariates$cadence_hz)
+#' steady <- sim$covariates$period_cv < median(sim$covariates$period_cv)
+#' rules <- list(by_speed = ifelse(fast, "good", "poor"),
+#'               by_accuracy = ifelse(steady, "good", "poor"))
+#' mt_labelings(sim$features, rules, n_perm = 200)
 #' @export
 mt_labelings <- function(features, labelings, good = "good", poor = "poor", n_perm = 2000L, seed = 42L) {
   labelings <- as.list(labelings)
@@ -139,6 +155,14 @@ mt_labelings <- function(features, labelings, good = "good", poor = "poor", n_pe
 #'   band), \code{T} (labellings by bands), \code{reversal}, \code{n_good},
 #'   \code{influence} (mean change in T when a subject is moved from poor to
 #'   good) and \code{exact}.
+#' @examples
+#' sim <- mt_simulate_motion(rep(c(1, -1), each = 6), rep(c(1, -1), times = 6),
+#'                           duration = 30, seed = 1)
+#' fast <- sim$covariates$cadence_hz > median(sim$covariates$cadence_hz)
+#' steady <- sim$covariates$period_cv < median(sim$covariates$period_cv)
+#' lab <- ifelse(fast & steady, "good", ifelse(!fast & !steady, "poor", NA))
+#' table(lab, useNA = "ifany")
+#' mt_labelset(sim$features, lab)
 #' @export
 mt_labelset <- function(features, labels, ambiguous = NULL, good = "good", poor = "poor",
                         prob = 0.5, max_exact = 65536L, seed = 42L) {

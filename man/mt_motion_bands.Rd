@@ -13,3 +13,6 @@ Named list of length-2 numeric vectors.
 \code{movement} covers the repetition frequency of a paced squat
 (roughly 0.4 to 0.9 Hz); \code{harmonic} covers its second and third harmonics.
 }
+\examples{
+mt_motion_bands()
+}

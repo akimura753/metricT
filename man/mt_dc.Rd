@@ -17,3 +17,8 @@ Percentage of features for which the mean of group 1 exceeds the mean of
 group 2. DC removes the native unit of a connectivity metric, so that
 different metrics can be compared on one scale ("unit erasure").
 }
+\examples{
+g1 <- matrix(rnorm(5 * 10, mean = 0.5), nrow = 5)   # 5 subjects, 10 features
+g2 <- matrix(rnorm(6 * 10), nrow = 6)               # 6 subjects
+mt_dc(g1, g2)
+}

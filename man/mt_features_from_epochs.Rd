@@ -27,3 +27,9 @@ Named list by band of \code{list(wpli, msc)} matrices
 \description{
 Subject-by-feature matrices from per-subject epoch arrays
 }
+\examples{
+ep <- lapply(1:4, function(i) mt_epoch(matrix(rnorm(128 * 20 * 3), ncol = 3), sfreq = 128))
+names(ep) <- paste0("s", 1:4)
+feats <- mt_features_from_epochs(ep, sfreq = 128)
+dim(feats$alpha$wpli)                        # subjects x channel pairs
+}

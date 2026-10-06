@@ -22,3 +22,9 @@ Minimal preprocessing for raw recordings: each channel of each epoch is
 linearly detrended (removing offset and slow drift), and an epoch is dropped
 when the peak-to-peak range of any channel exceeds \code{max_ptp}.
 }
+\examples{
+x <- matrix(rnorm(128 * 10 * 3), ncol = 3)
+x[300, 1] <- 50                              # one artefact
+ep <- mt_clean_epochs(mt_epoch(x, sfreq = 128), detrend = TRUE, max_ptp = 20)
+c(kept = attr(ep, "n_kept"), total = attr(ep, "n_total"))
+}

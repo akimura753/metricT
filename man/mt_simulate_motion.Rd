@@ -64,3 +64,10 @@ Under these assumptions MSC rises mainly with speed, while wPLI rises with
 accuracy and falls with speed. The assumptions are for studying the
 behaviour of Metric-T, not established facts about squatting.
 }
+\examples{
+z_speed <- rep(c(1, -1), each = 4)
+z_accuracy <- rep(c(1, -1), times = 4)
+sim <- mt_simulate_motion(z_speed, z_accuracy, duration = 30, seed = 1)
+sim$covariates
+dim(sim$features$movement$wpli)
+}

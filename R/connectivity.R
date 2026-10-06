@@ -2,6 +2,8 @@
 #'
 #' A band c(lo, hi) keeps Fourier bins with lo <= f < hi.
 #' @return Named list of length-2 numeric vectors.
+#' @examples
+#' mt_bands()
 #' @export
 mt_bands <- function() {
   list(theta = c(4, 8), alpha = c(8, 13), beta = c(13, 30), broadband = c(1, 40))
@@ -14,6 +16,10 @@ mt_bands <- function() {
 #' @param epoch_len Epoch length in seconds (default 2).
 #' @param overlap Fractional overlap between successive epochs (default 0.5).
 #' @return Array of dimension epochs x channels x samples.
+#' @examples
+#' x <- matrix(rnorm(128 * 10 * 3), ncol = 3)   # 10 s of 3 channels at 128 Hz
+#' ep <- mt_epoch(x, sfreq = 128, epoch_len = 2, overlap = 0.5)
+#' dim(ep)                                      # epochs x channels x samples
 #' @export
 mt_epoch <- function(x, sfreq, epoch_len = 2, overlap = 0.5) {
   x <- as.matrix(x)
@@ -45,6 +51,10 @@ mt_epoch <- function(x, sfreq, epoch_len = 2, overlap = 0.5) {
 #' @param bands Named list of bands, see \code{\link{mt_bands}}.
 #' @return Named list (one element per band) with numeric vectors
 #'   \code{wpli} and \code{msc} over channel pairs in \code{combn} order.
+#' @examples
+#' ep <- mt_epoch(matrix(rnorm(128 * 20 * 3), ncol = 3), sfreq = 128)
+#' con <- mt_connectivity(ep, sfreq = 128)
+#' str(con$alpha)
 #' @export
 mt_connectivity <- function(epochs, sfreq, bands = mt_bands()) {
   d <- dim(epochs)
@@ -95,6 +105,11 @@ mt_connectivity <- function(epochs, sfreq, bands = mt_bands()) {
 #' @param progress Optional function called with the subject index.
 #' @return Named list by band of \code{list(wpli, msc)} matrices
 #'   (subjects x channel pairs).
+#' @examples
+#' ep <- lapply(1:4, function(i) mt_epoch(matrix(rnorm(128 * 20 * 3), ncol = 3), sfreq = 128))
+#' names(ep) <- paste0("s", 1:4)
+#' feats <- mt_features_from_epochs(ep, sfreq = 128)
+#' dim(feats$alpha$wpli)                        # subjects x channel pairs
 #' @export
 mt_features_from_epochs <- function(epochs_list, sfreq, bands = mt_bands(), progress = NULL) {
   n <- length(epochs_list)
@@ -130,6 +145,16 @@ mt_features_from_epochs <- function(epochs_list, sfreq, bands = mt_bands(), prog
 #' @param drop_cols Column names to ignore (e.g. a time column).
 #' @param progress Optional function called with the subject index.
 #' @return Feature list as in \code{\link{mt_features_from_epochs}}.
+#' @examples
+#' files <- file.path(tempdir(), c("s1.csv", "s2.csv"))
+#' n <- 128 * 20                                # 20 s at 128 Hz
+#' for (f in files) {
+#'   d <- data.frame(time = seq_len(n) / 128, C3 = rnorm(n), C4 = rnorm(n), Pz = rnorm(n))
+#'   write.csv(d, f, row.names = FALSE)
+#' }
+#' feats <- mt_features_from_eeg_csv(files, sfreq = 128)
+#' dim(feats$alpha$wpli)
+#' unlink(files)
 #' @export
 mt_features_from_eeg_csv <- function(files, ids = NULL, sfreq, epoch_len = 2, overlap = 0.5,
                                      bands = mt_bands(), drop_cols = c("time", "Time", "t"),
@@ -156,6 +181,11 @@ mt_features_from_eeg_csv <- function(files, ids = NULL, sfreq, epoch_len = 2, ov
 #' @param max_ptp Peak-to-peak rejection threshold in the unit of the data
 #'   (e.g. microvolts); \code{NULL} keeps all epochs.
 #' @return The cleaned array, with attributes \code{n_total} and \code{n_kept}.
+#' @examples
+#' x <- matrix(rnorm(128 * 10 * 3), ncol = 3)
+#' x[300, 1] <- 50                              # one artefact
+#' ep <- mt_clean_epochs(mt_epoch(x, sfreq = 128), detrend = TRUE, max_ptp = 20)
+#' c(kept = attr(ep, "n_kept"), total = attr(ep, "n_total"))
 #' @export
 mt_clean_epochs <- function(epochs, detrend = TRUE, max_ptp = NULL) {
   d <- dim(epochs)
