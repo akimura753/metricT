@@ -54,6 +54,7 @@ EXECUTE.
 FREQUENCIES VARIABLES = group.
 !IFEND
 MATRIX.
+PRINT /TITLE = "Metric-T macro, version 1.2".
 !IF (!NFEAT !NE !NULL) !THEN
 GET d /VARIABLES = mt_grp !wl !ml /MISSING = OMIT.
 COMPUTE g1val = 1.

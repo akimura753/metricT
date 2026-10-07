@@ -9,12 +9,35 @@ uses the same definitions as `metric_t(..., exact = TRUE)`.
 |---|---|
 | `metricT.sps` | Defines the macro `!METRICT`. Run it once per session. |
 | `metricT_example.sps` | Self-contained example with simulated data. Open it and choose *Run > All*. |
+| `METRICT.spd` | Dialog box: choose the variables with the mouse, no syntax to write. |
 
-## Use
+## Dialog box (no syntax)
 
-Run `metricT.sps` (*Run > All*). Then call the macro in one of two ways.
+Install `METRICT.spd` once: *Extensions > Utilities > Install Custom Dialog
+(Compatibility mode)*, or double-click the file. The dialog then appears under
+*Analyze > Correlate > Metric-T (wPLI vs MSC)*. Open a data set with one row
+per subject, move the numeric group variable, the wPLI variables and the MSC
+variables into the three boxes, give the value of group 1 and the number of
+bands, and press *OK*. The dialog contains the whole computation; `metricT.sps`
+is not needed for it. Labels are available in English and Japanese.
 
-**A. Any data set that is open in SPSS** (`.sav`, Excel, CSV, ...), one row per
+## Use with syntax
+
+Run `metricT.sps` (*Run > All*); it only defines the macro and prints nothing.
+The file can be run again at any time. Then call the macro in one of two ways,
+for example by adding the call as the last line of the file.
+
+**From a feature table written by the R package** (`mt_write_features_csv()`).
+The macro reads the file itself, so nothing needs to be open:
+
+```
+!METRICT FILE = "C:/data/features.csv"  NBANDS = 4  NFEAT = 10  G1 = "CB".
+```
+
+`NFEAT` is the number of features (channel pairs) per band, and `G1` is the
+label of group 1 in the `group` column; all other subjects form group 2.
+
+**From any data set that is open in SPSS** (`.sav`, Excel, CSV, ...), one row per
 subject, with a numeric group variable and the wPLI and MSC features as variables:
 
 ```
@@ -24,15 +47,8 @@ subject, with a numeric group variable and the wPLI and MSC features as variable
 `G1` is the value of the group variable that defines group 1; all other cases
 form group 2. The two variable lists must have the same length and order. With
 several bands, list band 1 first, then band 2, and so on, and give `NBANDS`.
-
-**B. A feature table written by the R package** (`mt_write_features_csv()`):
-
-```
-!METRICT FILE = "C:/data/features.csv"  NBANDS = 4  NFEAT = 10  G1 = "CB".
-```
-
-`NFEAT` is the number of features (channel pairs) per band, and `G1` is the
-label of group 1 in the `group` column.
+The variable names must be those of the open data set; the dialog box avoids
+typing them.
 
 ## Output
 
@@ -51,8 +67,8 @@ available in the R package only.
 
 Results were compared with the R package (metricT 0.2.0) on simulated data and
 on the feature table of the reference paper: DC, T, p, the attainable minimum
-and the adjusted p-values agreed. The syntax was run in IBM SPSS Statistics
-and in GNU PSPP 2.0.0.
+and the adjusted p-values agreed. Both call forms of the macro and the dialog box were
+run in IBM SPSS Statistics 27 (version 1.2); the syntax also runs in GNU PSPP 2.0.0.
 
 Reference: Kimura A (2026). Metric-T: a permutation-based diagnostic for
 directional fragility in EEG functional connectivity analysis. *Neuroscience

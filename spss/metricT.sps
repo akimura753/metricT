@@ -8,15 +8,20 @@
 *            doi:10.1016/j.neuri.2026.100286
 * Companion to the R package metricT (https://github.com/akimura753/metricT);
 * same definitions as metric_t(..., exact = TRUE) for two groups.
+* Version 1.2 (2026-10-07). Checked in IBM SPSS Statistics and GNU PSPP
+* against the R package: identical results.
 *
-* Run this file once (Run > All). It only defines the macro !METRICT,
-* which can then be called in two ways.
+* Run this file (Run > All). It only defines one macro, which can then be
+* called in two ways. The name of the macro is METRICT preceded by an
+* exclamation mark. In the comments of this file it is written (!)METRICT,
+* because SPSS would execute a macro name that appears in a comment.
+* Remove the parentheses when you type a call.
 *
 * ----------------------------------------------------------------------.
 * A. Any data set that is open in SPSS
 *    (.sav, Excel, CSV ... opened through File > Open > Data or by syntax).
 *
-*   !METRICT GROUP = grp  G1 = 1  WPLI = (w1 TO w10)  MSC = (m1 TO m10)  NBANDS = 1.
+*   (!)METRICT GROUP = grp  G1 = 1  WPLI = (w1 TO w10)  MSC = (m1 TO m10)  NBANDS = 1.
 *
 *   Data layout: one row per subject.
 *   GROUP    numeric group variable
@@ -32,7 +37,7 @@
 * B. A feature table written by the R package (mt_write_features_csv).
 *    The macro reads the file and runs the analysis.
 *
-*   !METRICT FILE = "C:/data/features.csv"  NBANDS = 4  NFEAT = 10  G1 = "CB".
+*   (!)METRICT FILE = "C:/data/features.csv"  NBANDS = 4  NFEAT = 10  G1 = "CB".
 *
 *   File layout: a header line, then one row per subject with the columns
 *   subject, group, and for each band NFEAT wPLI columns followed by NFEAT
@@ -103,6 +108,7 @@ EXECUTE.
 FREQUENCIES VARIABLES = group.
 !IFEND
 MATRIX.
+PRINT /TITLE = "Metric-T macro, version 1.2".
 !IF (!NFEAT !NE !NULL) !THEN
 GET d /VARIABLES = mt_grp !wl !ml /MISSING = OMIT.
 COMPUTE g1val = 1.
