@@ -1,3 +1,11 @@
+# metricT 0.2.1
+
+* New vignette, `vignette("metricT")`: when to use Metric-T, the input format,
+  a worked analysis, how to read the output (including `p_min`), exact enumeration,
+  the labelling space and covariate trends.
+* `citation("metricT")` now returns the method paper (Kimura 2026,
+  Neuroscience Informatics 6:100286).
+
 # metricT 0.2.0
 
 * `metric_t(exact = TRUE)`: complete enumeration of two-group label assignments;

@@ -1,0 +1,224 @@
+---
+title: "Metric-T: checking whether a connectivity result depends on the metric"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Metric-T: checking whether a connectivity result depends on the metric}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4)
+```
+
+## When to use Metric-T
+
+EEG functional connectivity studies often report that one group shows "higher
+connectivity" than another. The direction of that difference can depend on which
+connectivity metric was used. The weighted phase lag index (wPLI) responds only to
+lagged coupling, whereas magnitude-squared coherence (MSC) also responds to zero-lag
+coupling such as volume conduction. Both metrics are computed from the same
+cross-spectrum, yet they can point in opposite directions.
+
+Use Metric-T when you want to know:
+
+* whether the direction of a group difference in connectivity is the same for wPLI
+  and MSC, or reverses between them ("directional fragility");
+* whether a disagreement between the two metrics is larger than would be expected
+  by chance under random group labels;
+* with small samples, exactly how unusual the observed grouping is among all possible
+  groupings, or whether a continuous covariate (e.g. years since onset) is associated
+  with a metric-dependent direction.
+
+Metric-T is a diagnostic that sits *next to* a connectivity analysis. It does not
+replace a test of the connectivity difference itself.
+
+## The statistic
+
+For each metric, direction consistency (DC) is the percentage of channel-pair
+features for which the mean of group 1 exceeds the mean of group 2. DC is 50% when
+there is no consistent direction. Metric-T is
+
+$$T = \mathrm{DC}(\mathrm{wPLI}) - \mathrm{DC}(\mathrm{MSC}),$$
+
+in percentage points (pp), ranging from -100 to +100. A **reversal** is flagged when
+the two DC values fall on opposite sides of 50%. Significance is assessed by aligned
+label permutation: the same relabelling is applied to every band and comparison, which
+permits Westfall-Young max-T adjustment across them.
+
+Reference: Kimura A (2026). Metric-T: A permutation-based diagnostic for directional
+fragility in EEG functional connectivity analysis. *Neuroscience Informatics* 6:100286.
+doi:10.1016/j.neuri.2026.100286
+
+```{r}
+library(metricT)
+```
+
+## Input data
+
+All analysis functions take a **feature list**: a named list with one element per
+frequency band, each holding two matrices of the same size, `wpli` and `msc`, with
+subjects in rows and channel pairs in columns. A `group` vector gives one label per
+subject, in the same order as the rows. Missing values are not allowed.
+
+There are four ways to obtain it.
+
+1. **From preprocessed EEG, one CSV per subject** (samples in rows, channels in
+   columns; a `time` column is ignored). Filtering, artefact removal and re-referencing
+   are done beforehand in your EEG software.
+
+    ```{r, eval = FALSE}
+    feats <- mt_features_from_eeg_csv(files, sfreq = 128)
+    ```
+
+2. **From epoched arrays** (epochs x channels x samples per subject), with
+   `mt_epoch()`, the optional `mt_clean_epochs()`, and `mt_features_from_epochs()`.
+
+3. **From a feature table** in CSV with columns `subject`, `group`, and one column
+   per feature named `<band>__<metric>__<pair>`, for example `alpha__wpli__C3-C4` and
+   `alpha__msc__C3-C4`. Read it with `mt_read_features_csv()`; write one with
+   `mt_write_features_csv()`.
+
+4. **From `features.npz`** produced by the published Python pipeline, with
+   `mt_read_npz()` (no Python required).
+
+The default bands are:
+
+```{r}
+mt_bands()
+```
+
+In this vignette, simulated data stand in for real recordings:
+
+```{r}
+sim <- mt_simulate(n = c(A = 20, B = 20), seed = 1)
+names(sim$features)
+dim(sim$features$alpha$wpli)   # subjects x channel pairs
+table(sim$group)
+```
+
+The CSV route round-trips the same object:
+
+```{r}
+f <- tempfile(fileext = ".csv")
+mt_write_features_csv(sim$features, sim$group, f)
+dat <- mt_read_features_csv(f)
+names(read.csv(f, check.names = FALSE))[1:4]
+unlink(f)
+```
+
+## Two-group analysis
+
+```{r}
+res <- metric_t(dat$features, dat$group, n_perm = 2000, seed = 42)
+res
+```
+
+In this simulation the alpha and broadband results reverse: DC(wPLI) = 0%, so
+group B is higher on every wPLI feature, while DC(MSC) = 100%, so group A is
+higher on every MSC feature. Thus a study using only one of the two metrics would report the opposite
+direction to a study using the other. Theta and beta show no significant
+metric dependence.
+
+With more than two groups, give `comparisons` (a list of pairs) and optionally
+`control`; the Westfall-Young family is then each band's comparisons against the
+control by default (`wy_family = "control"`), or each band (`"band"`), or all
+conditions together (`"all"`).
+
+The results table is available as a data frame:
+
+```{r}
+head(as.data.frame(res)[, c("band", "DC_wPLI", "DC_MSC", "T", "reversal", "p_raw", "p_min", "p_WY")])
+```
+
+```{r}
+plot(res)
+```
+
+### Reading the output
+
+* **DC(wPLI), DC(MSC)**: the percentage of features in which group 1 is higher.
+  Values near 50% mean no consistent direction for that metric.
+* **T**: the gap between the two DC values in pp. A large |T| means the two metrics
+  disagree about the direction.
+* **Reversal**: the two metrics point in opposite directions. A reversal with a small
+  p-value is evidence that the reported direction depends on the metric choice.
+* **p, p_Holm, q_BH, p_WY**: unadjusted and adjusted two-sided permutation p-values.
+  `p_WY` (Westfall-Young max-T) uses the dependence between conditions and is
+  usually the preferred adjustment.
+* **p_min**: the smallest p-value attainable in that condition. Because DC keeps only
+  the sign of each mean difference, strongly correlated channel pairs can make even
+  |T| = 100 pp non-significant. **If `p_min` exceeds your alpha, a large p-value is
+  not evidence that the direction is stable**; the design simply cannot detect
+  fragility there.
+
+## Small samples: exact enumeration
+
+With few subjects, all label assignments can be enumerated, so there is no Monte
+Carlo error and the attainable minimum p is known exactly.
+
+```{r}
+small <- mt_simulate(n = c(A = 6, B = 7), n_ch = 5, n_epochs = 12, seed = 7)
+ex <- metric_t(small$features, small$group, exact = TRUE, wy_family = "all")
+ex
+```
+
+### The complete labelling space
+
+`mt_label_space()` computes Metric-T for all $2^n - 2$ two-group labellings of the
+subjects (by default up to n = 16). `mt_locate()` then places any particular split on
+that distribution: the observed groups, an alternative cut-point, an exclusion, or a
+nuisance split such as recording session.
+
+```{r}
+sp <- mt_label_space(small$features)
+sp
+mt_locate(sp, small$group == "A")       # the observed grouping
+session <- rep(c("s1", "s2", "s3"), c(4, 4, 5))
+mt_locate(sp, session == "s1")          # a recording session treated as a group
+```
+
+The summary reports the effective number of independent features
+(`2500 / Var(DC)`) and the share of arbitrary labellings in which the two metrics
+already disagree in direction. If a recording session produces a T as large as the
+groups of interest, batch effects should be considered before interpreting a reversal.
+
+## Continuous covariates
+
+`metric_t_trend()` defines DC as the percentage of features positively associated with
+a numeric covariate, and permutes the covariate only within strata (for example
+sessions), so that differences between strata are not treated as chance.
+
+```{r}
+set.seed(11)
+years <- round(runif(13, 0, 40))
+tr <- metric_t_trend(small$features, years, strata = session)
+tr
+```
+
+`method = "rank"` (default) is invariant to monotone transformations of the covariate
+and the features; `method = "linear"` uses within-stratum centred raw values.
+
+## Graphical interface
+
+```{r, eval = FALSE}
+run_metricT_app()   # requires the 'shiny' package
+```
+
+The app accepts the built-in simulation, a feature file (CSV or `features.npz`), or one
+EEG CSV per subject with a participants table.
+
+## Common mistakes
+
+* Passing raw, unpreprocessed EEG. metricT computes wPLI and MSC but does not filter,
+  remove artefacts, or re-reference.
+* Rows of the feature matrices in a different order from `group`.
+* Interpreting a non-significant result as stability when `p_min` is above alpha.
+* Using too few permutations for the adjusted p-values; use `n_perm = 10000` or more
+  for reporting, or `exact = TRUE` for small samples.
+
+## Citation
+
+```{r, eval = FALSE}
+citation("metricT")
+```
