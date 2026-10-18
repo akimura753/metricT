@@ -8,14 +8,34 @@ Method: Kimura A (2026). *Metric-T: A permutation-based diagnostic for direction
 fragility in EEG functional connectivity analysis.* Neuroscience Informatics 6:100286.
 doi:10.1016/j.neuri.2026.100286
 
+## When to use it
+
+Use Metric-T when you report that one group has higher (or lower) EEG connectivity than
+another and want to know whether that direction holds for both wPLI and MSC, or reverses
+between them. It is a diagnostic that sits next to a connectivity analysis, not a
+replacement for it. Input: wPLI and MSC feature matrices (subjects x channel pairs, one
+pair of matrices per frequency band), or preprocessed EEG from which metricT computes them.
+
+A step-by-step guide, including how to read `p_min` and the reversal flag, is in the
+vignette: `vignette("metricT")`.
+
 ## Install
 
+From CRAN:
+
 ```r
-install.packages(c("remotes", "shiny"))        # shiny is only needed for the GUI
-remotes::install_github("akimura753/metricT")
+install.packages("metricT")
+install.packages("shiny")                      # only needed for the GUI
 ```
 
-or, from the release file: `install.packages("metricT_0.1.0.tar.gz", repos = NULL, type = "source")`.
+Development version from GitHub:
+
+```r
+install.packages("remotes")
+remotes::install_github("akimura753/metricT", build_vignettes = TRUE)
+```
+
+An SPSS syntax version that runs without R is in the [`spss`](spss) folder.
 
 ## Graphical interface
 
@@ -81,3 +101,10 @@ tr                                   # T, exact p, family-wise adjusted p
   sign of each mean difference, so when channel pairs vary in unison across subjects
   even |T| = 100 pp may not reach significance; a large p is then not evidence that
   the direction is stable.
+
+## Citation
+
+Kimura A (2026). Metric-T: A permutation-based diagnostic for directional fragility in
+EEG functional connectivity analysis. *Neuroscience Informatics* 6:100286.
+[doi:10.1016/j.neuri.2026.100286](https://doi.org/10.1016/j.neuri.2026.100286)
+(`citation("metricT")` in R).
